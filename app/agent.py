@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+import time
 import google.generativeai as genai
 from typing import Dict, Literal
 from pydantic import ValidationError
@@ -27,8 +29,8 @@ class DuplicateInvestigationAgent:
     and generates a final verdict with confidence and reasoning.
     """
 
-    MAX_STEPS = 5
-    MAX_RETRIES = 2
+    MAX_STEPS = 3
+    MAX_RETRIES = 5
 
     def __init__(self, api_key: str, dataframe):
         """
@@ -91,6 +93,20 @@ class DuplicateInvestigationAgent:
                     f"after {state.steps} steps"
                 )
                 break
+
+            if action == "RATE_LIMIT":
+                return {
+                    "case1_id": state.case1_id,
+                    "case2_id": state.case2_id,
+                    "state": state.model_dump(),
+                    "verdict": FinalVerdict(
+                        verdict="UNSURE",
+                        confidence=0.0,
+                        evidence=[
+                            "Rate limit reached during tool selection. Human review required."
+                        ],
+                    ).model_dump(),
+                }
 
             try:
                 result = self.tools[action](case1, case2)
@@ -218,12 +234,20 @@ OR
                     return "finish"
                     
             except Exception as e:
+                error = str(e)
+                if "429" in error:
+                    match = re.search(r"retry in (\d+)", error, re.IGNORECASE)
+                    wait = int(match.group(1)) + 1 if match else 30
+                    logger.warning(f"Rate limit hit. Sleeping {wait}s...")
+                    time.sleep(wait)
+                    continue
+
                 logger.error(f"Attempt {attempt + 1}: Gemini request failed: {e}")
                 if attempt == self.MAX_RETRIES - 1:
-                    logger.error("Max retries exhausted. Returning 'finish'.")
-                    return "finish"
+                    logger.error("Max retries exhausted for tool selection. Returning 'RATE_LIMIT'.")
+                    return "RATE_LIMIT"
 
-        return "finish"
+        return "RATE_LIMIT"
 
     def _final_verdict(
         self,
@@ -285,7 +309,8 @@ Respond with ONLY valid JSON in this format:
 }}
 """
 
-        for attempt in range(self.MAX_RETRIES):
+        retries = 0
+        while retries < self.MAX_RETRIES:
             try:
                 response = self.model.generate_content(prompt)
                 text = response.text.strip()
@@ -300,10 +325,11 @@ Respond with ONLY valid JSON in this format:
                 return verdict
                 
             except (json.JSONDecodeError, ValidationError, ValueError) as e:
+                retries += 1
                 logger.warning(
-                    f"Attempt {attempt + 1}: Failed to parse/validate verdict response: {e}"
+                    f"Attempt {retries}: Failed to parse/validate verdict response: {e}"
                 )
-                if attempt == self.MAX_RETRIES - 1:
+                if retries >= self.MAX_RETRIES:
                     logger.error(
                         f"Max retries exhausted. Returning UNSURE fallback."
                     )
@@ -318,8 +344,17 @@ Respond with ONLY valid JSON in this format:
                     )
                     
             except Exception as e:
-                logger.error(f"Attempt {attempt + 1}: Unexpected error: {e}")
-                if attempt == self.MAX_RETRIES - 1:
+                error = str(e)
+                if "429" in error:
+                    match = re.search(r"retry in (\d+)", error, re.IGNORECASE)
+                    wait = int(match.group(1)) + 1 if match else 30
+                    logger.warning(f"Rate limit hit. Sleeping {wait}s...")
+                    time.sleep(wait)
+                    continue
+
+                retries += 1
+                logger.error(f"Attempt {retries}: Unexpected error: {e}")
+                if retries >= self.MAX_RETRIES:
                     return FinalVerdict(
                         verdict="UNSURE",
                         confidence=0.0,

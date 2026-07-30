@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-
+from app.database import init_db, save_investigation
 load_dotenv()
 from app.agent import DuplicateInvestigationAgent
 from app.candidate_generator import generate_candidates, load_cases
@@ -10,6 +10,7 @@ from app.candidate_ranker import score_candidate
 
 def main():
     # Load cases
+    init_db()
     df = load_cases("data/support_cases.csv")
 
     # API Key
@@ -115,9 +116,14 @@ def main():
         try:
             result = agent.investigate(case1, case2)
 
+            investigation_id = save_investigation(result)
+
             investigation_results.append(result)
 
             verdict = result["verdict"]
+
+            print(f"Investigation ID: {investigation_id}")
+            print("Status: PENDING HUMAN REVIEW")
 
             print(
                 f"Verdict: {verdict['verdict']} | "
