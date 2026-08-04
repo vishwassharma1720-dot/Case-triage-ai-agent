@@ -83,26 +83,29 @@ def get_pending_investigations():
 
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT
-            id,
-            case1_id,
-            case2_id,
-            draft_verdict,
-            confidence,
-            status,
-            created_at
-        FROM investigations
-        WHERE status='PENDING'
-        ORDER BY id DESC
-    """)
+    try:
+        cursor.execute("""
+            SELECT
+                id,
+                case1_id,
+                case2_id,
+                draft_verdict,
+                confidence,
+                status,
+                created_at
+            FROM investigations
+            WHERE status='PENDING'
+            ORDER BY id DESC
+        """)
 
-    rows = [dict(row) for row in cursor.fetchall()]
+        rows = [dict(row) for row in cursor.fetchall()]
+        return rows
 
-    conn.close()
+    except sqlite3.OperationalError:
+        return []
 
-    return rows
-
+    finally:
+        conn.close()
 
 
 def get_investigation(investigation_id):
