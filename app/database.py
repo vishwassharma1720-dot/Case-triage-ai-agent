@@ -69,6 +69,14 @@ def save_investigation(result):
 
     return investigation_id
 
+
+def clear_investigations():
+    conn = get_connection()
+    conn.execute("DELETE FROM investigations")
+    conn.commit()
+    conn.close()
+
+
 def get_pending_investigations():
     conn = get_connection()
     conn.row_factory = sqlite3.Row
@@ -86,7 +94,7 @@ def get_pending_investigations():
             created_at
         FROM investigations
         WHERE status='PENDING'
-        ORDER BY id
+        ORDER BY id DESC
     """)
 
     rows = [dict(row) for row in cursor.fetchall()]
@@ -95,7 +103,7 @@ def get_pending_investigations():
 
     return rows
 
-import json
+
 
 def get_investigation(investigation_id):
     conn = get_connection()
@@ -122,12 +130,13 @@ def get_investigation(investigation_id):
 
     return data
 
-from datetime import datetime
 
 def record_human_decision(
     investigation_id,
     decision,
     reviewed_by,
+    final_verdict=None,
+    override_reason=None,
 ):
     conn = get_connection()
 
@@ -145,13 +154,17 @@ def record_human_decision(
             human_decision=?,
             reviewed_by=?,
             reviewed_at=?,
-            status=?
+            status=?,
+            human_final_verdict=?,
+            override_reason=?
         WHERE id=?
     """, (
         decision,
         reviewed_by,
         datetime.now().isoformat(),
         status,
+        final_verdict,
+        override_reason,
         investigation_id,
     ))
 
