@@ -1,0 +1,100 @@
+================================================================================
+CS-79316 vs CS-80419
+Verdict: DUPLICATE
+Confidence: 0.99
+Evidence:
+- Same email address (michael.patel@thornapplebrew.example)
+- Identical subject line ('Question about upcoming maintenance window')
+- Identical description regarding scheduled maintenance, IST window, and API availability
+- Timeline gap is only 8 minutes between the two submissions
+
+================================================================================
+CS-69432 vs CS-77272
+Verdict: DUPLICATE
+Confidence: 0.99
+Evidence:
+- Same customer account and contact email (Quillon Pharma, yuki.gupta@quillonpharma.example)
+- Identical subjects ('CSV upload rejected with validation error')
+- Identical descriptions detailing failure on row 214 of the bulk upload reference file with unspecific error messages
+- Timeline gap is only 17 minutes between creation times
+
+================================================================================
+CS-43084 vs CS-62022
+Verdict: DUPLICATE
+Confidence: 0.98
+Evidence:
+- Same customer account and email address
+- Identical subject line indicating slow portal response times
+- Case 2 explicitly states it was raised earlier by email
+- Descriptions discuss the exact same search screen performance issue across different channels
+
+================================================================================
+CS-75826 vs CS-80220
+Verdict: DUPLICATE
+Confidence: 0.95
+Evidence:
+- Same customer account and email address
+- Identical subject line indicating webhook notifications not firing
+- Description explicitly references the same underlying issue regarding status-change webhooks stopping since the weekend
+- Case 1 explicitly mentions it was raised earlier by email as well, matching Case 2's email channel submission
+
+================================================================================
+CS-59081 vs CS-94085
+Verdict: DUPLICATE
+Confidence: 0.99
+Evidence:
+- Same customer email address (nadia.iyer@trellingmanufa.example)
+- Identical subject line ('Data feed delivery delayed')
+- Exact same description detailing the missing daily data feed and failing downstream reporting jobs
+- Created on the same day with a very short timeline gap of 16 minutes
+
+================================================================================
+CS-15936 vs CS-38560
+Verdict: DUPLICATE
+Confidence: 0.99
+Evidence:
+- Same customer account and email address
+- Identical subject line regarding access removal for a departed employee
+- Identical description text requesting portal access and API credential revocation
+- Timeline gap is only 17 minutes
+
+================================================================================
+CS-20279 vs CS-22803
+Verdict: DUPLICATE
+Confidence: 0.98
+Evidence:
+- Identical subject line indicating dashboard widgets not loading
+- Exact matching description detailing perpetual loading spinners, timeout errors, and cache clearing
+- Same customer email address (case-insensitive match)
+- Same account (Zephyr Ridge Water)
+
+================================================================================
+CS-82856 vs CS-82970
+Verdict: DUPLICATE
+Confidence: 0.99
+Evidence:
+- Exact match on subject and description regarding portal slow response times
+- Same contact name and email address
+- High text similarity scores across accounts and descriptions
+
+================================================================================
+CS-12050 vs CS-23224
+Verdict: DUPLICATE
+Confidence: 0.98
+Evidence:
+- Identical email address (arjun.gupta@ostaraenergy.example)
+- Identical subject line ('API rate limit errors')
+- Identical description detailing HTTP 429 responses and inquiring about rate limit changes
+- Multiple channels used by the same contact for the same unresolved issue
+
+================================================================================
+CS-20566 vs CS-63120
+Verdict: DUPLICATE
+Confidence: 0.98
+Evidence:
+- Same customer (David Novak from Vireo Telecom)
+- Same email address (david.novak@vireotelecom.example)
+- Identical subjects ('SSO configuration assistance')
+- Descriptions discuss the exact same SAML SSO migration issue
+- Case 2 explicitly states it was raised earlier by email as well
+

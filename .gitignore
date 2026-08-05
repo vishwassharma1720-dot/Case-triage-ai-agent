@@ -5,9 +5,6 @@ __pycache__/
 # Database
 *.db
 
-# Logs
-logs/
-*.log
 
 # Environment
 .env
